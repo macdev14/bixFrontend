@@ -1,67 +1,40 @@
-import React, {useEffect, useState} from "react";
-import {
-  SimpleGrid,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  StatArrow,
-  StatGroup,
-  Stack,
-  Text,
-  Flex,
-  Icon,
-  Badge
-} from "@chakra-ui/react";
+import React from "react"
+import { Chrono } from "react-chrono";
+import { PageContainer, Nav, PageContent } from "../Layout";
 
-import { FaChevronUp, FaChevronDown } from "react-icons/fa";
-
-import { PageContainer, PageContent, Nav, Footer, Card } from "../Layout";
-
-import "./Dashboard.scss";
-import { useApi } from "../../hooks/useApi";
-import IUser from "../../../types";
-
-export default function Dashboard() {
-  const { get } = useApi();
-  const [ users, setUsers ] = useState<IUser[]>();
-
-  useEffect(()=>{
-    const getUsers = async () => {
-      if (!users) {
-          try {
-              const resp = await get("employees/");
-              setUsers(resp);
-          } catch (error) {
-              console.error('Erro ao obter tipos de veículos:', error);
-          }
+const Dashboard = () => {
+  const items = [{
+    title: "1940",
+    cardTitle: "Dunkirk",
+    url: "http://www.history.com",
+    cardSubtitle:"Men of the British Expeditionary Force (BEF) wade out to..",
+    cardDetailedText: "Men of the British Expeditionary Force (BEF) wade out to..",
+    media: {
+      type: "IMAGE",
+      source: {
+        url: "http://someurl/image.jpg"
       }
-  };
-  getUsers();
-  },[]);
-  
-  console.log(users);
+    }
+  }];
+
   return (
     <PageContainer isFixedNav>
-      <Nav />
-      <PageContent
-        title="Dashboard"
-       
-      >
-        <SimpleGrid columns={{ sm: 1, md: 2 }} spacing={10}>
-          
-         
-          {  users && users.map((user:any, i:any)=>{
-            return <Card
-            title={user.username}
-          >
-           {user.username}
-          </Card>
-          } )}
-        
-        </SimpleGrid>
-      </PageContent>
-      <Footer />
-    </PageContainer>
-  );
+    <Nav />
+    <PageContent
+      title="Timeline"
+      // primaryAction={{
+      //   content: "Add Company",
+      //   onClick: () => {
+      //     alert("ok");
+      //   },
+      // }}
+    >
+    <div style={{ width: '700px', height: '950px' }}>
+  <Chrono disableInteraction items={items} mode="VERTICAL" />
+</div>
+
+</PageContent>
+</PageContainer>
+  )
 }
+export default Dashboard
