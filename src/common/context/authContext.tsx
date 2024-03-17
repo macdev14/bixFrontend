@@ -27,6 +27,7 @@ export const AuthProvider: React.FC = ({ children }: Props) => {
     const storage = await localStorage.getItem('@App:user')
     if (storage){
       const parsedStorage = JSON.parse(storage)
+      setUser(parsedStorage)
       return !_.isEmpty(parsedStorage)
     }
     else{

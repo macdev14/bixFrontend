@@ -36,10 +36,11 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  HStack,
 
 } from "@chakra-ui/react";
 
-import { FaEllipsisV } from "react-icons/fa";
+import { FaPencilAlt, FaRegTrashAlt } from "react-icons/fa";
 import "./Table.scss";
 import { useApi } from "../../../hooks/useApi";
 import ErrorAlert from "../Alert/ErrorAlert";
@@ -77,7 +78,7 @@ export default function CustomTable({
   // };
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const {get, post, put } = useApi();
+  const {del, get, post, put } = useApi();
 
   const [editId, setEditId] = useState(0);
   const [loadedData, setLoadedData] = useState(null);
@@ -102,20 +103,7 @@ export default function CustomTable({
     success ? setShowSuccess(true) : setShowError(true); 
   }
 
-  
-  const loadFieldValues = async (editId) => {
-    switch (source) {
-      case 'employee':
-        get(`employees/${editId}/`)
-          .then(({id, name, cpf, vacation_days, entered_at, exited_at}) => { setField_one(name); setField_two(cpf); setField_three(vacation_days); setField_four(entered_at);setField_five(exited_at); setEditId(id); });
-        break;
-      case 'company':
-        get(`company/${editId}/`)
-          .then(({id, name, cnpj}) => { setField_one(name); setField_two(cnpj); setEditId(id); });
-        break;
-      
-    }
-  }
+ 
 
   const loadItems = async () => {
     switch (source) {
@@ -135,11 +123,29 @@ export default function CustomTable({
         .then((res) => res.data)
         .then((data) => setItems(data));
         break;
+      default: setEditId(0)
      
     }
   }
 
+     
+  const loadFieldValues = async (editId) => {
+    switch (source) {
+      case 'employee':
+        get(`employees/${editId}/`)
+          .then(({id, name, cpf, vacation_days, entered_at, exited_at, company}) => { setField_one(name); setField_two(cpf); setField_three(vacation_days); setField_four(entered_at);setField_five(exited_at);setField_six(company); setEditId(id); });
+        break;
+      case 'company':
+        get(`company/${editId}/`)
+          .then(({id, name, cnpj}) => { setField_one(name); setField_two(cnpj); setEditId(id); });
+        break;
+      default: setEditId(0)
+      
+    }
+  }
+
   useEffect(() => {
+  
     if (editId > 0) {
       loadFieldValues(editId)
     }
@@ -168,6 +174,34 @@ export default function CustomTable({
     setField_four(date);
     setField_five(''); 
     onOpen();
+  }
+
+  const deleteItem = () => {
+    switch (source) {
+      case 'employee':
+        if (editId && editId > 0) {
+          del(`employees/${editId}/`)
+            .then((res) => { setEditId(0); loadItems(); showAlerts(); }).catch(({response})=>{
+              console.log(response)
+              showAlerts(false, Object.values(response) + '');
+            })
+          }
+          
+          ;
+        break;
+      
+      case 'company':
+        if (editId && editId > 0) { 
+          del(`company/${editId}/`)
+          .then((res) => { setEditId(0); loadItems(); showAlerts() }).catch(({response})=>{
+            showAlerts(false, Object.values(response.data) + '');
+          })
+        }
+          
+        break;
+        default: setEditId(0);
+     
+    }
   }
 
   const saveOrUpdate = () => {
@@ -199,6 +233,7 @@ export default function CustomTable({
               showAlerts(false, Object.values(response.data) + '');
             });
         break;
+        default: setEditId(0);
      
     }
 
@@ -225,7 +260,7 @@ export default function CustomTable({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{loadedData ? 'Edit' : 'Add'} {source}</ModalHeader>
+          <ModalHeader>{editId > 0 ? 'Edit' : 'Add'} {source}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Stack>
@@ -332,20 +367,28 @@ export default function CustomTable({
                   </Td>
                 ))}
                 <Td data-column="item-actions">
-                  <Menu>
-                    <MenuButton
-                      as={IconButton}
-                      icon={<FaEllipsisV />}
-                    ></MenuButton>
-                    <MenuList>
-                      <MenuItem onClick={() => {
+                
+                    <HStack>
+                  <Button 
+                 
+                  onClick={() => {
                         setEditId(item.id);
                         onOpen();
                       }
-                      }>Edit</MenuItem>
-                      <MenuItem>Delete</MenuItem>
-                    </MenuList>
-                  </Menu>
+                      
+                      }><FaPencilAlt/></Button>
+                         <Button
+                         color="red"
+                     
+                      onClick={() => {
+                        setEditId(item.id);
+                        deleteItem();}
+                      }><FaRegTrashAlt color="red"/></Button>
+                 
+                 </HStack>
+                   
+                    
+                
                 </Td>
               </Tr>
             ))}
