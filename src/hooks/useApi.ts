@@ -26,8 +26,12 @@ export const useApi = () => ({
     get: async (endpoint: string, token?: string) => {
         try {
             const headers: HeadersInit = {};
-            if (token && token != null) {
-                headers.Authorization = `Bearer ${token}`;
+            const storedToken = localStorage.getItem('@App:token')
+            
+            if (storedToken && storedToken != null) {
+                const parsedToken = JSON.parse(storedToken)
+                api.defaults.headers.Authorization = `Bearer ${parsedToken.access}`;
+                headers.Authorization = `Bearer ${parsedToken.access}`;
             }
 
             const response = await api.get(endpoint, { headers });

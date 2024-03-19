@@ -45,17 +45,9 @@ import "./Table.scss";
 import { useApi } from "../../../hooks/useApi";
 import ErrorAlert from "../Alert/ErrorAlert";
 import SuccessAlert from "../Alert/SuccessAlert";
+import { useNavigate } from "react-router-dom";
 
-{/* {selectable ? (
-                // <Th data-column="global-selector">
-                //   <Checkbox
-                //     isChecked={localSelected.length === itemsIds.length}
-                //     onChange={(e) => setCheckedItems(e.target.checked)}
-                //   />
-                // </Th>
-              ) : (
-                ""
-              )} */}
+
 
 export default function CustomTable({
   headers = [],
@@ -80,8 +72,9 @@ export default function CustomTable({
 
   const {del, get, post, put } = useApi();
 
+  const navigate = useNavigate();
+
   const [editId, setEditId] = useState(0);
-  const [loadedData, setLoadedData] = useState(null);
 
   const [companyOptions, setCompanyOptions] = useState([]);
   
@@ -109,19 +102,13 @@ export default function CustomTable({
     switch (source) {
       case 'employee':
         get('employees/')
-        .then((res) => setItems(res) )
+        .then((res) => setItems(res) ).catch(()=>navigate('/login'))
         get('company/')
-        .then((res) => setCompanyOptions(res))
+        .then((res) => setCompanyOptions(res)).catch(()=>navigate('/login'))
         break;
       case 'company':
         get('company/')
-        .then((res) => setItems(res))
-        break;
-      
-      case 'users':
-        get('users/')
-        .then((res) => res.data)
-        .then((data) => setItems(data));
+        .then((res) => setItems(res)).catch(()=>navigate('/login'))
         break;
       default: setEditId(0)
      
@@ -133,11 +120,12 @@ export default function CustomTable({
     switch (source) {
       case 'employee':
         get(`employees/${editId}/`)
-          .then(({id, name, cpf, vacation_days, entered_at, exited_at, company}) => { setField_one(name); setField_two(cpf); setField_three(vacation_days); setField_four(entered_at);setField_five(exited_at);setField_six(company); setEditId(id); });
-        break;
+          .then(({id, name, cpf, vacation_days, entered_at, exited_at, company}) => { setField_one(name); setField_two(cpf); setField_three(vacation_days); setField_four(entered_at);setField_five(exited_at);setField_six(company); setEditId(id); })
+          .catch(()=>navigate('/login'))
+          break;
       case 'company':
         get(`company/${editId}/`)
-          .then(({id, name, cnpj}) => { setField_one(name); setField_two(cnpj); setEditId(id); });
+          .then(({id, name, cnpj}) => { setField_one(name); setField_two(cnpj); setEditId(id); }).catch(()=>navigate('/login'));
         break;
       default: setEditId(0)
       

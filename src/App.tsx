@@ -20,7 +20,7 @@ export const App = () => (
   <ChakraProvider theme={theme}>
 {/*    @ts-ignore*/}
       <AuthProvider>  
-    <AppRoutes/>
+    <OtherRoutes/>
     </AuthProvider>
   </ChakraProvider>
 

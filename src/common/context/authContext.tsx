@@ -26,6 +26,7 @@ export const AuthProvider: React.FC = ({ children }: Props) => {
       const parsedToken = JSON.parse(token)
       const parsedStorage = JSON.parse(storage)
       setUser(parsedStorage)
+      setToken(parsedToken.access)
       // const data = validateToken(parsedToken.refresh)
       // localStorage.setItem('@App:token', JSON.stringify(data))
     }
@@ -40,6 +41,7 @@ export const AuthProvider: React.FC = ({ children }: Props) => {
       // const data = validateToken(parsedToken.refresh)
       // localStorage.setItem('@App:token', JSON.stringify(data))
       setUser(parsedStorage)
+      await setToken(parsedToken.access)
       return !_.isEmpty(parsedStorage)
     }
     else{
@@ -55,7 +57,7 @@ export const AuthProvider: React.FC = ({ children }: Props) => {
         setUser(data.user);
         localStorage.setItem('@App:user', JSON.stringify(data.user));
         localStorage.setItem('@App:token', JSON.stringify({access: data.access, refresh: data.refresh }));
-        setToken(data.access)
+        await setToken(data.access)
       }
     } catch (error) {
       console.error('Error signing in:', error);
