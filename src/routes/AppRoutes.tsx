@@ -11,7 +11,7 @@ const AppRoutes = () => {
     useEffect(
         ()=>{
             isAuthenticated().then(e=>{
-                // alert(e);
+                alert(e);
                 setSigned(e)})
            
         }

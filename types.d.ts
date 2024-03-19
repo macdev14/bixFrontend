@@ -23,6 +23,7 @@ type AuthContextType = {
     authState?: IAuthState | undefined,
     signIn: ({ email, password }: ILogin) => Promise<void>;
     signOut: () => void;
+  
 };
 
 interface IToken {

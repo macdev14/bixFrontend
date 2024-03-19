@@ -13,6 +13,7 @@ import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Logo } from "./Logo"
 import AppRoutes from "./routes/AppRoutes"
 import { AuthProvider } from "./common/context/authContext"
+import OtherRoutes from "./routes/OtherRoutes"
 
 export const App = () => (
  

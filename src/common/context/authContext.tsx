@@ -16,17 +16,29 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider: React.FC = ({ children }: Props) => {
   const [user, setUser] = useState<object | null>(null);
-  const { signin } = useApi();
+  const { signin, setToken } = useApi();
 
   useEffect(() => {
-    
-    setUser({username:''})
+    const storage = localStorage.getItem('@App:user')
+    const token = localStorage.getItem('@App:token')
+   
+    if (storage && token){
+      const parsedToken = JSON.parse(token)
+      const parsedStorage = JSON.parse(storage)
+      setUser(parsedStorage)
+      // const data = validateToken(parsedToken.refresh)
+      // localStorage.setItem('@App:token', JSON.stringify(data))
+    }
   }, []); // Empty dependency array to run only once on mount
 
   async function isAuthenticated (){
-    const storage = await localStorage.getItem('@App:user')
-    if (storage){
+    const storage = localStorage.getItem('@App:user')
+    const token = localStorage.getItem('@App:token')
+    if (storage && token){
       const parsedStorage = JSON.parse(storage)
+      const parsedToken = JSON.parse(token)
+      // const data = validateToken(parsedToken.refresh)
+      // localStorage.setItem('@App:token', JSON.stringify(data))
       setUser(parsedStorage)
       return !_.isEmpty(parsedStorage)
     }
@@ -42,7 +54,8 @@ export const AuthProvider: React.FC = ({ children }: Props) => {
       if (data) {
         setUser(data.user);
         localStorage.setItem('@App:user', JSON.stringify(data.user));
-        localStorage.setItem('@App:token', data.access);
+        localStorage.setItem('@App:token', JSON.stringify({access: data.access, refresh: data.refresh }));
+        setToken(data.access)
       }
     } catch (error) {
       console.error('Error signing in:', error);
